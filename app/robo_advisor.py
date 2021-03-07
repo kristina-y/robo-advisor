@@ -22,7 +22,13 @@ parsed_response = json.loads(response.text)
 
 last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
 
-latest_close = parsed_response["Time Series (Daily)"]["2021-03-05"]["4. close"]
+tsd = parsed_response["Time Series (Daily)"]
+
+dates = list(tsd.keys()) # TO DO: assumes first day is on top,
+    # consider sorting to ensure that the latest day is first
+latest_day = dates[0]
+
+latest_close = tsd[latest_day]["4. close"]
 # Info outputs
 
 # this is the "app/robo_advisor.py" file
