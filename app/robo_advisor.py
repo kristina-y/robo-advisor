@@ -98,7 +98,7 @@ for symbol in tickers:
     recent_low = min(low_prices)
     # Info outputs
 
-    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", "prices.csv")
+    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", f"prices.{symbol}.csv")
     #"data/prices.csv" # a relative filepath
 
     csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
