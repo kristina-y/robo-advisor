@@ -125,7 +125,10 @@ print("-------------------------")
 print("SELECTED SYMBOL: XYZ")
 print("-------------------------")
 print("REQUESTING STOCK MARKET DATA...")
-print("REQUEST AT: 2018-02-20 02:00pm")
+from datetime import datetime
+now = datetime.now()
+
+print("INFO REQUESTED ON: ", now.strftime("%d/%m/%Y at %I:%M %p"))
 print("-------------------------")
 print(f"LATEST DAY: {latest_day}")
 print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
