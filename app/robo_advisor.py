@@ -4,7 +4,7 @@ import requests
 import json
 import os
 import csv
-
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -21,12 +21,16 @@ tickers = []
 
 while True:
     
-    user_input = input("Please enter a stock ticker, or type DONE if there are no more.")
+    user_input = input("Please enter a stock ticker, or type DONE if there are no more. ")
 
     if user_input == "DONE":
         
+        #if user has not entered anything yet, force them to enter at least one ticker
+        if len(tickers) == 0:
+            print("Please enter at least one ticker.")
         #End while loop if user typed "DONE"
-        break
+        else:
+            break
 
     else:
 
@@ -67,10 +71,7 @@ api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 for symbol in tickers:
     request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
     response = requests.get(request_url)
-    #print(type(response)) #> class
-    #print(response.status_code) #> 200
-    #print(response.text) #> string version of a dictionary
-
+    
     parsed_response = json.loads(response.text)
 
     #last_refreshed = parsed_response["Meta Data"]["3. Last Refreshed"]
@@ -98,7 +99,7 @@ for symbol in tickers:
     recent_low = min(low_prices)
     # Info outputs
 
-    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", f"prices.{symbol}.csv")
+    csv_file_path = os.path.join(os.path.dirname(__file__), "..", "data", f"prices_{symbol}.csv")
     #"data/prices.csv" # a relative filepath
 
     csv_headers = ["timestamp", "open", "high", "low", "close", "volume"]
@@ -121,24 +122,34 @@ for symbol in tickers:
     
 
 
-print("-------------------------")
-print("SELECTED SYMBOL: XYZ")
-print("-------------------------")
-print("REQUESTING STOCK MARKET DATA...")
-from datetime import datetime
-now = datetime.now()
+    print("-------------------------")
+    print(f"SELECTED SYMBOL: {symbol}")
+    print("-------------------------")
+    print("REQUESTING STOCK MARKET DATA...")
+    now = datetime.now()
 
-print("INFO REQUESTED ON: ", now.strftime("%d/%m/%Y at %I:%M %p"))
-print("-------------------------")
-print(f"LATEST DAY: {latest_day}")
-print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
-print(f"RECENT HIGH: {to_usd(float(recent_high))}")
-print(f"RECENT LOW: {to_usd(float(recent_low))}")
-print("-------------------------")
-print("RECOMMENDATION: BUY or SELL!")
-print("RECOMMENDATION REASON: TODO")
-print("-------------------------")
-print(f"Writing data to CSV: {csv_file_path}...")
-print("-------------------------")
-print("HAPPY INVESTING!")
-print("-------------------------")
+    print("INFO REQUESTED ON: ", now.strftime("%d/%m/%Y at %I:%M %p"))
+    print("-------------------------")
+    print(f"LATEST DAY: {latest_day}")
+    print(f"LATEST CLOSE: {to_usd(float(latest_close))}")
+    print(f"RECENT HIGH: {to_usd(float(recent_high))}")
+    print(f"RECENT LOW: {to_usd(float(recent_low))}")
+    print("-------------------------")
+    # Recommendation to buy or sell:
+    if float(latest_close) <= float(recent_low) * 1.20:
+        print("RECOMMENDATION: BUY")
+        percent = (float(latest_close)-float(recent_low))/float(recent_low)*100
+        print(f"RECOMMENDATION REASON: {symbol} is trading at only {percent:.2f}% above its recent low.")
+    elif float(latest_close) <= float(recent_high) * 0.9:
+        print("RECOMMENDATION: SELL")
+        percent = (1 - (float(latest_close)/float(recent_high)))*100
+        print(f"RECOMMENDATION REASON: {symbol} is trading at only {percent:.2f}% below its recent high.")
+    else:
+        print("RECOMMENDATION: HOLD")
+        print(f"RECOMMENDATION REASON: {symbol} is trading more than 20% above its recent low and more than 10% below its recent high.")
+
+    print("-------------------------")
+    print(f"Writing data to CSV: {csv_file_path}...")
+    print("-------------------------")
+    print("HAPPY INVESTING!")
+    print("-------------------------")
