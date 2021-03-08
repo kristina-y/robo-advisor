@@ -5,6 +5,10 @@ import json
 import os
 import csv
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Function to_usd was reused from the Shopping Cart project, where Professor Rossetti provided this function.
 def to_usd(my_price):
     """
@@ -13,7 +17,56 @@ def to_usd(my_price):
     return f"${my_price:,.2f}" #> $12,000.71
 
 # INFO inputs
-symbol = "MSFT" #ask the user for it
+tickers = []
+
+while True:
+    
+    user_input = input("Please enter a stock ticker, or type DONE if there are no more.")
+
+    if user_input == "DONE":
+        
+        #End while loop if user typed "DONE"
+        break
+
+    else:
+
+        # verify the user input
+        stock = str(user_input)
+        #checking length of the ticker
+        if (len(stock) > 0 and len(stock)) < 6:
+
+            # check if user input is all characters a-z by looping through the string
+            valid = False
+            for char in stock:
+                
+                # Checking for upper case by converting to ASCII codes
+                # This is adapted from studytonight.com, although I am already familiar 
+                # with this approach from previous coding classes
+                if ord(char) >= 65 and ord(char) <= 90:
+                    #all good, no errors
+                    valid = True
+                elif ord(char) >= 97 and ord(char) <= 122:
+                    #all good, no errors
+                    valid = True
+                else:
+
+                    #Error
+                    print("Please make sure the ticker does not include any numbers and try again.")
+                    valid = False
+                    break
+            if valid == True:
+                tickers.append(stock)
+
+        else:
+            print("The ticker should be between 1 and 5 characters in length")
+
+
+print(tickers)
+
+
+# input validation
+
+
 api_key = os.environ.get("ALPHAVANTAGE_API_KEY")
 
 request_url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={api_key}"
