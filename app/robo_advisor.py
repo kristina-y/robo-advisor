@@ -6,6 +6,8 @@ import os
 import csv
 from datetime import datetime
 from dotenv import load_dotenv
+import pandas as pd
+import plotly.express as px
 
 load_dotenv()
 
@@ -171,6 +173,17 @@ for symbol in tickers:
         
         print(" ")
         print(f"Writing data to CSV: {csv_file_path}...")
+        print("Opening price chart...")
+        print(" ")
+
+        #Plotting price chart
+        #This code was adapted from plotly.com/python/plot-data-from-csv/
+        df = pd.read_csv(csv_file_path)
+        fig = px.line(df, x = 'timestamp', y = 'close', labels = {"timestamp": "date", "close": "price"}, title = f'{symbol} prices over the last 3 months')
+        fig.show()
+
+
+
         print("-------------------------")
         
     except:
